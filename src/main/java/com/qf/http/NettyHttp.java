@@ -1,18 +1,18 @@
-package com.qf.netty;
+package com.qf.http;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LineBasedFrameDecoder;
-import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.http.*;
+
 /**
  * @author ChenJie
- * @date 2020-06-10 09:36:53
+ * @date 2020-06-10 17:32:18
  * 功能说明
  */
-public class NettyServer {
-    public static void main(String[] args){
+public class NettyHttp {
+    public static void main(String[] args) {
         // 创建主从线程池
         EventLoopGroup master = new NioEventLoopGroup();
         EventLoopGroup slave = new NioEventLoopGroup();
@@ -27,30 +27,24 @@ public class NettyServer {
                 .channel(NioServerSocketChannel.class)
 
                 // 事件处理器 重要
-                .childHandler(new ServerChannelHandler());
-
-                /*.childHandler(new ChannelInitializer() {
-
+                .childHandler(new ChannelInitializer() {
                     @Override
                     protected void initChannel(Channel channel) throws Exception {
-                        // 事件处理器链
                         ChannelPipeline pipeline = channel.pipeline();
+                        /*pipeline.addLast(new HttpRequestDecoder());
+                        pipeline.addLast(new HttpResponseEncoder());*/
 
+                        // netty服务端HTTP请求的编码解码处理器   - 跟上面的编码与解码效果一样
+                        pipeline.addLast(new HttpServerCodec());
 
-                        // 可以进行多次添加   一般只用addLast好区分顺序
-                        // 记住    顺序很重要
+                        // http请求的聚合器  通常放到HttpServerCodec编解码器之后，表示对HttpRequest、HttpContent和LastHttpContent结果聚合
+                        // 放在这个之后的ChannelHandler只会收到一个FullHttpRequest
+                        pipeline.addLast(new HttpObjectAggregator(1024*1024*10));
 
-                        // 解决TCP发送字符串粘包拆包问题    按行进行打印
-                        //pipeline.addLast(new LineBasedFrameDecoder(1024*1024));
-                        // byteBuf与String之间的编码解码转换
-                        //pipeline.addLast(new StringDecoder());
-                        //pipeline.addLast(new StringDecoder());
-                        pipeline.addLast(new ServerChannelHandler());
-                        *//*pipeline.addLast(new ServerChannelHandler());
-                        pipeline.addLast(new ServerChannelHandler());
-                        pipeline.addLast(new ServerChannelHandler());*//*
+                        // 自定义的消息处理器 - 处理HTTP请求
+                        pipeline.addLast(new HttpChannelHandler());
                     }
-                });*/
+                });
 
         // 绑定端口
         ChannelFuture future = serverBootstrap.bind(8080);// 绑定这个方法是异步的动作，这里还未绑定可能就打印了结果

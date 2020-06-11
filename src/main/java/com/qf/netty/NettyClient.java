@@ -52,9 +52,9 @@ public class NettyClient {
                 byteBuf.writeBytes(bytes);
                 channel.writeAndFlush(byteBuf);
             }
-        } catch (UnsupportedEncodingException e) {
+        }catch (InterruptedException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
