@@ -10,6 +10,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * @author ChenJie
  * @date 2020-06-10 19:01:04

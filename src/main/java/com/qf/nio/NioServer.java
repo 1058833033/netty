@@ -69,7 +69,6 @@ public class NioServer {
 
                         // 统一管理socketChannel对象
                         socketChannels.add(socket);
-
                     }else if (selectionKey.isReadable()){
                         // 有客户端给我发送了消息
                         SocketChannel socketChannel = (SocketChannel) selectionKey.channel();
