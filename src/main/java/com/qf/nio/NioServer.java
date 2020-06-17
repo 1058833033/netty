@@ -58,6 +58,7 @@ public class NioServer {
                         System.out.println("有一个客户端连接了服务器！");
                         ServerSocketChannel channel = (ServerSocketChannel)selectionKey.channel();
 
+
                         // 客户端连接
                         SocketChannel socket = channel.accept();
 
